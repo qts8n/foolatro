@@ -5,6 +5,7 @@ extern number cull_back;
 #ifdef VERTEX
 extern vec2 anchor;
 extern vec2 sprite_size;
+extern vec2 sprite_scale;
 extern number x_rot;
 extern number y_rot;
 extern number inset;
@@ -48,8 +49,7 @@ vec4 position(mat4 tp, vec4 vert)
     float inv_z = 1.0 / v_p.z;
     v_q = vec3(v_p.xy * inv_z, inv_z);
 
-    vec2 proj = v_q.xy - v_o;
-    proj *= sprite_size;
+    vec2 proj = (v_q.xy - v_o) * sprite_size * sprite_scale;
     proj += anchor;
 
     return tp * vec4(proj, vert.z, 1.0);

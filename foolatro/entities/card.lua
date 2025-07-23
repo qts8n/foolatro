@@ -15,7 +15,7 @@ local DEFAULT_INSET = 0
 local DEFAULT_CULL_BACK = 1
 local DEFAULT_IDLE_SPEED = 0.35  -- cycles per second
 local DEFAULT_IDLE_FACTOR = 0.55  -- portion of tilt_max used for idle motion
-local DEFAULT_MOMENTUM = 0.75
+local DEFAULT_MOMENTUM = 0.45
 
 --- Constructor
 -- @param opts table Optional parameters:
@@ -89,6 +89,7 @@ function Card.new(world, opts)
 
     -- Internal state
     self.is_dragged = false
+    self.is_moving = false
 
     -- Physics
     self.momentum = opts.momentum or DEFAULT_MOMENTUM
@@ -116,23 +117,30 @@ function Card:update(dt)
         self.target_y = my - self.height * 0.5
     end
 
-    -- Smoothly move to target position
-    local tolerance = 0.01
+    --- Smoothly move to target position
+    local tolerance = 0.1
     local delta_x = self.target_x - self.x
     local delta_y = self.target_y - self.y
-    local inv_momentum = 1 - self.momentum
 
-    if math.abs(delta_x) > tolerance
-            or self.velocity_x > tolerance
-            or math.abs(delta_y) > tolerance
-            or self.velocity_y > tolerance
-    then
+    -- Check if the card is moving
+    local is_moving = math.abs(delta_x) > tolerance or math.abs(delta_y) > tolerance
+
+    -- Play flick sound when card stops moving
+    if is_moving ~= self.is_moving and not is_moving and not self.is_dragged then
+        self.sounds.flick:play()
+    end
+
+    local inv_momentum = 1 - self.momentum
+    if math.abs(delta_x) > tolerance or math.abs(delta_y) > tolerance or is_moving then
         self.velocity_x = self.velocity_x * self.momentum + inv_momentum * delta_x * 30 * dt
         self.velocity_y = self.velocity_y * self.momentum + inv_momentum * delta_y * 30 * dt
 
         self.x = self.x + self.velocity_x
         self.y = self.y + self.velocity_y
     end
+
+    -- Update moving state
+    self.is_moving = is_moving
 end
 
 -- Handle Love2D mousepressed callback
@@ -143,10 +151,9 @@ function Card:handle_mousepressed(mx, my, button)
 end
 
 -- Handle Love2D mousereleased callback
-function Card:handle_mousereleased(mx, my, button)
+function Card:handle_mousereleased(_, _, button)
     if button == 1 and self.is_dragged then
         self.is_dragged = false
-        self.sounds.flick:play()
     end
 end
 
@@ -166,9 +173,9 @@ function Card:draw()
         dir = -1
     end
 
-    -- Magnitude scales with horizontal distance (capped at 10% of width).
+    -- Magnitude scales with horizontal distance (capped at a % of width).
     local dist_norm = math.min(math.abs(cx - sun.x) / self.world.screen.width, 1)
-    local max_offset = self.width * 0.1
+    local max_offset = self.width * 0.2
     local shadow_offset_x = dir * dist_norm * max_offset
 
     local shadow_height = self.height
@@ -199,6 +206,14 @@ function Card:draw()
         y_rot = y_rot - dx_norm * self.tilt_max  -- horizontal movement tilts around Y axis
     end
 
+    -- Determine scale based on whether the card is being dragged
+    local x_scale = 1
+    local y_scale = 1
+    if self.is_dragged then
+        x_scale = 1.05
+        y_scale = 1.05
+    end
+
     --- Apply shader uniforms and render the card
     love.graphics.setShader(self.shader)
 
@@ -209,6 +224,7 @@ function Card:draw()
     self.shader:send("cull_back", self.cull_back)
     self.shader:send("anchor", { cx, cy })
     self.shader:send("sprite_size", { self.width, self.height })
+    self.shader:send("sprite_scale", { x_scale, y_scale })
 
     love.graphics.draw(self.image, self.x, self.y)
 
