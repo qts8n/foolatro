@@ -18,7 +18,8 @@ local DEFAULT_IDLE_FACTOR = 0.55  -- portion of tilt_max used for idle motion
 local DEFAULT_MOMENTUM = 0.45
 local DEFAULT_SHININESS = 32.0
 
---- Constructor
+--- Creates a new Card entity with perspective tilt and lighting effects.
+-- @param world table The world instance containing global state and light sources
 -- @param opts table Optional parameters:
 --        x, y          Top-left draw position (default 0,0)
 --        image_name    Asset id registered in asset_server (default "card_back")
@@ -27,8 +28,11 @@ local DEFAULT_SHININESS = 32.0
 --        fov           Field of view for shader (default 90)
 --        inset         Shader inset value (default 0)
 --        cull_back     Shader cull flag (default 1)
---        idle_speed    Speed of idle rotation (default 0.35)
---        idle_factor   Factor of tilt_max used for idle motion (default 0.85)
+--        idle_speed    Speed of idle rotation in cycles/sec (default 0.35)
+--        idle_factor   Factor of tilt_max used for idle motion (default 0.55)
+--        momentum      Movement smoothing factor between 0-1 (default 0.45)
+--        shininess    Specular highlight sharpness (default 32.0)
+-- @return table A new Card instance
 function Card.new(world, opts)
     -- Validate world
     Validate.table(world, "world")

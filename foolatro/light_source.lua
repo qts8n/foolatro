@@ -3,6 +3,13 @@ local Validate = require("foolatro.utils.validate")
 local LightSource = {}
 LightSource.__index = LightSource
 
+--- Creates a new LightSource for 3D lighting calculations.
+-- @param opts table Required parameters:
+--        x, y, z       Position in world space
+--        r, g, b       RGB color components between 0-1 (default 1,1,1)
+--        ambient       Ambient light intensity between 0-1 (default 0.1)
+--        diffuse       Diffuse light intensity between 0-1 (default 0.9)
+-- @return table A new LightSource instance
 function LightSource.new(opts)
     if opts == nil then
         opts = {}

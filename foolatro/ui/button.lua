@@ -1,7 +1,3 @@
--- Button UI Component -------------------------------------------------------
--- Provides a basic interactive button with hover highlight and press animation.
--- Dependencies: LÖVE (love2d), Validate utils.
-
 -- Module imports
 local Validate = require("foolatro.utils.validate")
 
@@ -9,15 +5,17 @@ local Validate = require("foolatro.utils.validate")
 local Button = {}
 Button.__index = Button
 
---- Constructor
--- @param opts table with fields:
---        x, y          Position of the top-left corner (required)
---        w, h          Width and height in pixels (required)
+--- Creates a new Button UI component with hover effects and click handling.
+-- @param opts table Required parameters:
+--        x, y          Position of the top-left corner in pixels
+--        w, h          Width and height in pixels
 --        label         Text to display (default "Button")
---        font          Custom Love2D Font (optional, defaults to current font)
---        on_click      Function called when the button is clicked (optional)
---        hover_color   {r, g, b, a} override while hovered (optional)
---        press_offset  Pixel offset on press animation (default 2)
+--        font          Custom LÖVE Font object for label (optional)
+--        on_click      Function called when button is clicked (optional)
+--        hover_color   RGBA color table {r,g,b,a} for hover state (optional)
+--        press_offset  Vertical offset in pixels for press animation (default 2)
+--        animation_speed Pixels per second for press animation (default 50)
+-- @return table A new Button instance
 function Button.new(opts)
     Validate.table(opts, "opts")
 

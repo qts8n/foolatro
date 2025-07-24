@@ -4,7 +4,10 @@ local Spritesheet = require("foolatro.utils.spritesheet")
 -- Module constants
 local ASSET_DIR_PATH = "assets/"
 
--- Module definition
+--- Asset management singleton for loading and retrieving game resources.
+-- Handles loading and caching of images, spritesheets, shaders, and sounds.
+-- All assets are loaded from the ASSET_DIR_PATH directory.
+-- @module AssetServer
 local AssetServer = {}
 
 -- Image asset table

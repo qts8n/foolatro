@@ -5,18 +5,17 @@ local Validate = require("foolatro.utils.validate")
 local Spritesheet = {}
 Spritesheet.__index = Spritesheet
 
---- Create a new spritesheet helper.
--- @param image           The already loaded Image object for the spritesheet.
--- @param frame_width     Width (in pixels) of the regular frames in the sheet.
--- @param frame_height    Height (in pixels) of the regular frames in the sheet.
--- @param overrides       Optional array with custom sprite definitions for frames that
---                        do NOT fit the regular grid. Each entry is a table with the keys:
---                          name   (string) unique identifier of the sprite
---                          x, y   (number) top-left pixel position in the sheet
---                          width, height (number) size of the sprite in pixels
---                        When provided, these custom quads are added (or overwrite) entries
---                        in the generated grid.
--- @return                A Spritesheet instance.
+--- Creates a new Spritesheet helper for managing sprite quads from a texture atlas.
+-- @param image table LÖVE Image object containing the spritesheet texture
+-- @param frame_width number Width in pixels of each regular frame in the grid
+-- @param frame_height number Height in pixels of each regular frame in the grid
+-- @param overrides table Optional array of custom sprite definitions:
+--        [1..n] = {
+--            name string Unique identifier for the sprite
+--            x, y number Top-left pixel position in the sheet
+--            width, height number Size of the sprite in pixels
+--        }
+-- @return table A new Spritesheet instance with generated quads
 function Spritesheet.new(image, frame_width, frame_height, overrides)
     -- Validate input arguments early using shared Validate module
     Validate.image(image, "image")

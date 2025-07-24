@@ -1,6 +1,7 @@
--- Validation helper module
--- Provides reusable assertion helpers for type and value checking across the project.
-
+--- Validation helper module for type and value checking.
+-- Provides reusable assertion helpers for validating function parameters
+-- and ensuring data consistency across the project.
+-- @module Validate
 local Validate = {}
 
 local function fail(name, message)

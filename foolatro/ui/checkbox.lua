@@ -1,7 +1,3 @@
--- Checkbox UI Component -----------------------------------------------------
--- Provides an interactive checkbox with hover highlight and press animation.
--- Dependencies: LÖVE (Love2D), Validate utils.
-
 -- Module imports
 local Validate = require("foolatro.utils.validate")
 
@@ -9,16 +5,18 @@ local Validate = require("foolatro.utils.validate")
 local Checkbox = {}
 Checkbox.__index = Checkbox
 
---- Constructor
--- @param opts table with fields:
---        x, y          Position of the top-left corner (required)
---        size          Width/height of the square box (required, pixel)
---        label         Text shown to the right of the box (optional)
---        font          Custom font for label (optional)
---        checked       Initial checked state (boolean, default false)
---        on_toggle     Callback when state changes: function(checkbox, new_state)
---        hover_color   Color applied on hover {r, g, b, a} (optional)
---        press_offset  Pixel offset animation when pressed (default 1)
+--- Creates a new Checkbox UI component with label and toggle functionality.
+-- @param opts table Required parameters:
+--        x, y          Position of the top-left corner in pixels
+--        size          Width/height of the square box in pixels
+--        label         Text shown to the right of the box
+--        font          Custom LÖVE Font object for label (optional)
+--        checked       Initial checked state (default false)
+--        on_toggle     Callback function(checkbox, new_state) on state change
+--        hover_color   RGBA color table {r,g,b,a} for hover state (optional)
+--        press_offset  Vertical offset in pixels for press animation (default 2)
+--        animation_speed Pixels per second for press animation (default 50)
+-- @return table A new Checkbox instance
 function Checkbox.new(opts)
     Validate.table(opts, "opts")
 

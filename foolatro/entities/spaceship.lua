@@ -6,14 +6,16 @@ local Validate = require("foolatro.utils.validate")
 local Spaceship = {}
 Spaceship.__index = Spaceship
 
---- Constructor
+--- Creates a new Spaceship entity with sprite rendering and movement capabilities.
+-- @param world table The world instance containing global state and light sources
 -- @param opts table Optional parameters:
---        x, y         Starting position (default 0,0)
---        quad_id      Quad index (or name) in the "spaceships" sheet (default 1)
---        scale        Uniform scale (default 1)
---        scale_x/y    Non-uniform scale overrides
+--        x, y         Starting position in pixels (default 0,0)
+--        quad_id      Quad index or name in the "spaceships" sheet (default 1)
+--        scale        Uniform scale factor for both axes (default 1)
+--        scale_x/y    Non-uniform scale overrides for individual axes
 --        rotation     Initial rotation in radians (default 0)
---        origin_x/y   Draw origin offsets (default 0)
+--        origin_x/y   Draw origin offsets in pixels (default 0)
+-- @return table A new Spaceship instance
 function Spaceship.new(world, opts)
     -- Validate world
     Validate.table(world, "world")

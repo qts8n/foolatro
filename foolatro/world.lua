@@ -3,6 +3,8 @@ local LightSource = require("foolatro.light_source")
 local World = {}
 World.__index = World
 
+--- Creates a new World instance to manage global game state and lighting.
+-- @return table A new World instance with default screen dimensions and lighting
 function World.new()
     local self = setmetatable({}, World)
 
