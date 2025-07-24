@@ -41,7 +41,8 @@ function love.load()
     })
 
     -- Initialize entities
-    spaceship = Spaceship.new(world, {
+    spaceship = Spaceship.new({
+        world = world,
         x = 100,
         y = 100,
         quad_id = 2,
@@ -52,7 +53,8 @@ function love.load()
         origin_x = 0,
         origin_y = 0
     })
-    card = Card.new(world, {
+    card = Card.new({
+        world = world,
         x = 500,
         y = 100,
         fov = 45,

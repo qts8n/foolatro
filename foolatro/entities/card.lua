@@ -19,30 +19,30 @@ local DEFAULT_MOMENTUM = 0.45
 local DEFAULT_SHININESS = 32.0
 
 --- Creates a new Card entity with perspective tilt and lighting effects.
--- @param world table The world instance containing global state and light sources
--- @param opts table Optional parameters:
---        x, y          Top-left draw position (default 0,0)
---        image_name    Asset id registered in asset_server (default "card_back")
---        shader_name   Shader id registered in asset_server (default "card_perspective")
---        tilt_max      Max degrees tilt when hovered (default 1)
---        fov           Field of view for shader (default 90)
---        inset         Shader inset value (default 0)
---        cull_back     Shader cull flag (default 1)
---        idle_speed    Speed of idle rotation in cycles/sec (default 0.35)
---        idle_factor   Factor of tilt_max used for idle motion (default 0.55)
---        momentum      Movement smoothing factor between 0-1 (default 0.45)
+-- @param opts table Required parameters:
+--        world        The world instance containing global state and light sources
+--        x, y         Top-left draw position (default 0,0)
+--        image_name   Asset id registered in asset_server (default "card_back")
+--        shader_name  Shader id registered in asset_server (default "card_perspective")
+--        tilt_max     Max degrees tilt when hovered (default 1)
+--        fov          Field of view for shader (default 90)
+--        inset        Shader inset value (default 0)
+--        cull_back    Shader cull flag (default 1)
+--        idle_speed   Speed of idle rotation in cycles/sec (default 0.35)
+--        idle_factor  Factor of tilt_max used for idle motion (default 0.55)
+--        momentum     Movement smoothing factor between 0-1 (default 0.45)
 --        shininess    Specular highlight sharpness (default 32.0)
 -- @return table A new Card instance
-function Card.new(world, opts)
-    -- Validate world
-    Validate.table(world, "world")
-    Validate.has_method(world, "get_the_sun", "get_the_sun")
-
+function Card.new(opts)
     -- Validate options
     if opts == nil then
         opts = {}
     end
     Validate.table(opts, "opts")
+
+    -- Validate world
+    Validate.table(opts.world, "world")
+    Validate.has_method(opts.world, "get_the_sun", "get_the_sun")
 
     Validate.number(opts.x, "x")
     Validate.number(opts.y, "y")
@@ -56,7 +56,7 @@ function Card.new(world, opts)
 
     local self = setmetatable({}, Card)
 
-    self.world = world
+    self.world = opts.world
 
     -- Asset retrieval
     self.image = asset_server:get_image("card_back")
