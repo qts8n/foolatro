@@ -16,6 +16,7 @@ local DEFAULT_CULL_BACK = 1
 local DEFAULT_IDLE_SPEED = 0.35  -- cycles per second
 local DEFAULT_IDLE_FACTOR = 0.55  -- portion of tilt_max used for idle motion
 local DEFAULT_MOMENTUM = 0.45
+local DEFAULT_SHININESS = 32.0
 
 --- Constructor
 -- @param opts table Optional parameters:
@@ -81,6 +82,7 @@ function Card.new(world, opts)
     self.fov = opts.fov or DEFAULT_FOV
     self.inset = opts.inset or DEFAULT_INSET
     self.cull_back = opts.cull_back or DEFAULT_CULL_BACK
+    self.shininess = opts.shininess or DEFAULT_SHININESS
 
     -- Idle animation parameters
     self.idle_speed = opts.idle_speed or DEFAULT_IDLE_SPEED  -- cycles per second
@@ -169,12 +171,12 @@ function Card:draw()
 
     -- Direction: if card center is to the right of sun, shadow shifts left.
     local dir = 1
-    if cx > sun.x then
+    if cx > sun.position.x then
         dir = -1
     end
 
     -- Magnitude scales with horizontal distance (capped at a % of width).
-    local dist_norm = math.min(math.abs(cx - sun.x) / self.world.screen.width, 1)
+    local dist_norm = math.min(math.abs(cx - sun.position.x) / self.world.screen.width, 1)
     local max_offset = self.width * 0.2
     local shadow_offset_x = dir * dist_norm * max_offset
 
@@ -217,6 +219,7 @@ function Card:draw()
     --- Apply shader uniforms and render the card
     love.graphics.setShader(self.shader)
 
+    -- Perspective uniforms
     self.shader:send("fov", self.fov)
     self.shader:send("x_rot", x_rot)
     self.shader:send("y_rot", y_rot)
@@ -225,6 +228,13 @@ function Card:draw()
     self.shader:send("anchor", { cx, cy })
     self.shader:send("sprite_size", { self.width, self.height })
     self.shader:send("sprite_scale", { x_scale, y_scale })
+
+    -- Lighting uniforms
+    self.shader:send("light_pos", sun:get_position())
+    self.shader:send("light_color", sun:get_color())
+    self.shader:send("light_ambient", sun.ambient)
+    self.shader:send("light_diffuse", sun.diffuse)
+    self.shader:send("shininess", self.shininess)
 
     love.graphics.draw(self.image, self.x, self.y)
 

@@ -1,5 +1,10 @@
 #ifdef PIXEL
 extern number cull_back;
+extern vec3 light_pos;
+extern vec3 light_color;
+extern number light_ambient;
+extern number light_diffuse;
+extern number shininess;
 #endif
 
 #ifdef VERTEX
@@ -16,12 +21,13 @@ extern number fov;
 varying vec3 v_p;
 varying vec2 v_o;
 varying vec3 v_q;
+varying vec3 v_normal;
+varying vec3 v_frag_pos;
 
 float fov_to_tan(float fov)
 {
     return tan(radians(fov) * 0.5);
 }
-
 
 #ifdef VERTEX
 vec4 position(mat4 tp, vec4 vert)
@@ -52,6 +58,10 @@ vec4 position(mat4 tp, vec4 vert)
     vec2 proj = (v_q.xy - v_o) * sprite_size * sprite_scale;
     proj += anchor;
 
+    // Calculate normal based on rotation
+    v_normal = rot[2];
+    v_frag_pos = vec3(proj, 0.0);
+
     return tp * vec4(proj, vert.z, 1.0);
 }
 #endif
@@ -66,9 +76,34 @@ vec4 effect(vec4 col, Image tex, vec2 uv, vec2 sc)
     float t = fov_to_tan(fov);
     vec2 adj_uv = (v_q.xy / v_q.z - v_o) * t * 2.0;
 
-    vec4 color = Texel(tex, adj_uv + 0.5) * col;
-    color.a *= step(max(abs(adj_uv.x), abs(adj_uv.y)), 0.5);
+    vec4 base_color = Texel(tex, adj_uv + 0.5) * col;
+    base_color.a *= step(max(abs(adj_uv.x), abs(adj_uv.y)), 0.5);
 
-    return color;
+    // Calculate lighting
+    vec3 normal = normalize(v_normal);
+    vec3 light_dir = normalize(light_pos - v_frag_pos);
+
+    // View direction (assuming camera is at 0,0,1 in screen space)
+    vec3 view_dir = normalize(vec3(0.0, 0.0, 1.0) - v_frag_pos);
+
+    // Reflection vector
+    vec3 reflect_dir = reflect(-light_dir, normal);
+
+    // Calculate specular component
+    float spec = pow(max(dot(view_dir, reflect_dir), 0.0), shininess);
+    vec3 specular = light_color * spec;
+
+    // Calculate diffuse
+    float diff = max(dot(normal, light_dir), 0.0);
+    vec3 diffuse = light_color * diff * light_diffuse;
+
+    // Calculate ambient
+    vec3 ambient = light_color * light_ambient;
+
+    // Combine lighting
+    vec3 lighting = ambient + diffuse + specular;
+
+    // Apply lighting to base color
+    return vec4(base_color.rgb * lighting, base_color.a);
 }
 #endif

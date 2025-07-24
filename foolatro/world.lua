@@ -1,10 +1,12 @@
+local LightSource = require("foolatro.light_source")
+
 local World = {}
 World.__index = World
 
 function World.new()
     local self = setmetatable({}, World)
 
-    self.lights = {}
+    self.sun = {}
     self.screen = {
         width = 0,
         height = 0,
@@ -23,18 +25,15 @@ function World:load()
 
     --- Intialize lights
     -- Sun
-    self.lights[1] = {
-        -- At the top center of the screen
+    self.sun = LightSource.new({
         x = math.floor(self.screen.width * 0.5),
         y = 0,
-        r = 1,
-        g = 1,
-        b = 1,
-    }
+        z = math.floor(self.screen.height * 0.8),
+    })
 end
 
 function World:get_the_sun()
-    return self.lights[1]
+    return self.sun
 end
 
 return World
